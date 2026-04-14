@@ -7,17 +7,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CsvLoader {
 
-    public static List<Venta> cargarVentas(String rutaFichero) {
+    public static List<Venta> cargarVentas() {
 
         Path ruta = Paths.get("src/main/resources/ventas.csv");
-        List<Venta> ventas = null;
+        List<Venta> ventas = new ArrayList<>();
 
         try {
+            //Leer todas las filas del fichero ventas.csv
             List<String> filas = Files.readAllLines(ruta);
+
+            //Eliminar la primera fila (encabezado)
+            filas.removeFirst();
+
             //Convertir cada fila String a un objeto Venta
             filas.forEach( l -> {
                 //1,Protein Powder,Fitness,Indonesia,6,643.64,2025-04-25,BIZUM
