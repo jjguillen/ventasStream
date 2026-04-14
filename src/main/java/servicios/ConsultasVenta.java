@@ -3,10 +3,7 @@ package servicios;
 import entidades.Venta;
 import lombok.Data;
 
-import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -95,6 +92,35 @@ public class ConsultasVenta {
                 .summaryStatistics();
     }
 
+    /**
+     * Devuelve las ventas agrupadas por categoría contando cuántas hay de cada una
+     * @return
+     */
+    public Map<String, Long> getNumeroVentasPorCategoria() {
+        return ventas.stream()
+                .collect(Collectors.groupingBy(Venta::getCategoria,
+                        Collectors.counting()));
+    }
+
+    /**
+     * Ventas agrupadas por país. Muestra país y total facturación de ese país
+     * @return
+     */
+    public Map<String, Double> getFacturacionTotalPorPais() {
+        return ventas.stream()
+                .collect(Collectors.groupingBy(Venta::getPais,
+                        Collectors.summingDouble(Venta::getTotalLinea)));
+    }
+
+    /**
+     * Número de ventas agrupadas por método de pago
+     * @return
+     */
+    public Map<String, Long> getNumeroVentasPorMetodoPago() {
+        return ventas.stream()
+                .collect(Collectors.groupingBy(Venta::getMetodoPago,
+                        Collectors.counting()));
+    }
 
 
 
