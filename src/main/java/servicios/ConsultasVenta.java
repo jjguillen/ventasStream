@@ -3,6 +3,7 @@ package servicios;
 import entidades.Venta;
 import lombok.Data;
 
+import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ public class ConsultasVenta {
     public List<Venta> getVentasMayor100() {
         return ventas.stream()
                 .filter(venta -> venta.getTotalLinea() > 100)
+                .sorted(Comparator.comparing(Venta::getTotalLinea).reversed())
                 .toList();
     }
 
@@ -33,6 +35,7 @@ public class ConsultasVenta {
     public List<Venta> getVentasByCategoriaElectronica() {
         return ventas.stream()
                 .filter(v -> v.getCategoria().equals("Electronics"))
+                .sorted(Comparator.comparing(Venta::getFecha))
                 .toList();
     }
 
@@ -120,6 +123,61 @@ public class ConsultasVenta {
         return ventas.stream()
                 .collect(Collectors.groupingBy(Venta::getMetodoPago,
                         Collectors.counting()));
+    }
+
+    /**
+     * Facturación total por Categoria
+     * @return
+     */
+    public Map<String, Double> getFacturacionTotalPorCategoria() {
+        return ventas.stream()
+                .collect(Collectors.groupingBy(Venta::getCategoria,
+                        Collectors.summingDouble(Venta::getTotalLinea)));
+    }
+
+    public Map<Month, List<Venta>> getVentasAgrupadasPorMes() {
+        return ventas.stream()
+                .collect(Collectors.groupingBy(v ->
+                        v.getFecha().getMonth()));
+    }
+
+    /**
+     * DEMASIADO COMPLICADO: Devuelve la categoría con más unidades vendidas
+     */
+    public void getCategoriaMasUnidadesVendidas() {
+        Map<String, Integer> unidadesVendidasPorCategoria = ventas.stream()
+                .collect(Collectors.groupingBy(Venta::getCategoria,
+                        Collectors.summingInt(Venta::getCantidad)));
+
+        //Food - 25 unidades
+        //Electronics - 10 unidades
+        //Books - 15 unidades
+
+        unidadesVendidasPorCategoria.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .ifPresent(entry -> IO.println(entry.getKey()));
+    }
+
+
+    /**
+     * Indica si todas las ventas con BIZUM son menores a 200€
+     * @return
+     */
+    public boolean todasVentasBizumMenor200() {
+        return ventas.stream()
+                .allMatch(v -> v.getMetodoPago().equals("BIZUM")
+                        && v.getTotalLinea() < 200);
+    }
+
+    /**
+     * Porcentaje de ventas con tarjeta
+     * @return
+     */
+    public double getPorcentajeVentasTarjeta() {
+        long totalTarjeta = ventas.stream()
+                .filter(v -> v.getMetodoPago().equals("TARJETA"))
+                .count();
+        return ((double) totalTarjeta / ventas.size()) * 100.0;
     }
 
 
