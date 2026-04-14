@@ -25,6 +25,28 @@ public class ConsultasVenta {
                 .toList();
     }
 
+    /**
+     * Devuelve las ventas de la categoría "Electronics"
+     * @return
+     */
+    public List<Venta> getVentasByCategoriaElectronica() {
+        return ventas.stream()
+                .filter(v -> v.getCategoria().equals("Electronics"))
+                .toList();
+    }
+
+    /**
+     * Devuelve los productos vendidos ordenados por nombre. Sin repetidos.
+     * @return
+     */
+    public List<String> getProductosVendidosOrder() {
+        return ventas.stream()
+                .map(Venta::getProducto)
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
 
 
 }
